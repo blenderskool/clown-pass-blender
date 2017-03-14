@@ -1,10 +1,10 @@
 bl_info = {
-    "name": "Clown Pass",
+    "name": "Multi Color RGB Pass",
     "author": "Akash Hamirwasia",
     "version": (1, 0),
     "blender": (2, 75, 0),
     "location": "Properties > Render Layers",
-    "description": "A Clown Pass Creator",
+    "description": "Generate a useful multi color map which has every material in different color",
     "warning": "",
     "wiki_url": "http://www.blenderskool.cf",
     "tracker_url": "",
@@ -13,9 +13,9 @@ bl_info = {
 import bpy
 import random
 mat_count = 0
-enable_clown = False
-class ClownSetup(bpy.types.Operator):
-    bl_idname="clown.setup"
+enable_multi_rgb = False
+class MultiRGBSetup(bpy.types.Operator):
+    bl_idname="multi_rgb.setup"
     bl_label="Setup"
 
     def execute(self, context):
@@ -27,8 +27,8 @@ class ClownSetup(bpy.types.Operator):
             mat_count = mat_count+1
         return{'FINISHED'}
 
-class RunClown(bpy.types.Operator):
-    bl_idname='clown.run'
+class RunMultiRGB(bpy.types.Operator):
+    bl_idname='multi_rgb.run'
     bl_label='Run'
 
     def execute(self, context):
@@ -39,14 +39,14 @@ class RunClown(bpy.types.Operator):
         y_loc = 433.178
         x_loc = -250.344
         try:
-            group = bpy.data.node_groups['Clown Mask']
+            group = bpy.data.node_groups['MultiRGB Mask']
             for node in group.nodes:
                 group.nodes.remove(node)
             group_inputs = group.nodes.new('NodeGroupInput')
             group_inputs.location = -928.319, 85.763
             group_outputs = group.nodes.new('NodeGroupOutput')
         except:
-            group = bpy.data.node_groups.new('Clown Mask', 'CompositorNodeTree')
+            group = bpy.data.node_groups.new('MultiRGB Mask', 'CompositorNodeTree')
             group.inputs.new('NodeSocketColor', 'IndexMA')
             group.outputs.new('NodeSocketColor', 'Mask')
             group_inputs = group.nodes.new('NodeGroupInput')
@@ -86,10 +86,10 @@ class RunClown(bpy.types.Operator):
 
         return{'FINISHED'}
 
-class clown_notice(bpy.types.Operator):
-    bl_idname = "clown.notice"
-    bl_label = "Clown Notice"
-    bl_description = "Install Clown"
+class MultiRGBNotice(bpy.types.Operator):
+    bl_idname = "multi_rgb.notice"
+    bl_label = "Multi RGB Notice"
+    bl_description = "Use Multi Color RGB Pass"
 
     def invoke(self, context, event):
         return context.window_manager.invoke_props_dialog(self)
@@ -103,52 +103,52 @@ class clown_notice(bpy.types.Operator):
         col.separator()
 
     def execute(self,context):
-        global enable_clown
-        enable_clown = True
-        bpy.context.scene.clown_mask.clown_bool_mask = True
+        global enable_multi_rgb
+        enable_multi_rgb = True
+        bpy.context.scene.multi_rgb_mask.multi_rgb_bool_mask = True
         return {'FINISHED'}
 
 def PassesPanel(self, context):
     layout = self.layout
 
     col = layout.column(align=True)
-    layer = bpy.context.scene.clown_mask#.render.layers.active.clown_mask
-    col.prop(layer, 'clown_bool_mask', text='Clown Mask')
-    col.operator(clown_notice.bl_idname)
-    #col.operator(ClownSetup.bl_idname, text="Setup")
-    #col.operator(RunClown.bl_idname, text="Run")
+    layer = bpy.context.scene.multi_rgb_mask#.render.layers.active.multi_rgb_mask
+    col.prop(layer, 'multi_rgb_bool_mask', text='MultiRGB Mask')
+    col.operator(MultiRGBNotice.bl_idname)
+    #col.operator(MultiRGBSetup.bl_idname, text="Setup")
+    #col.operator(RunMultiRGB.bl_idname, text="Run")
 
-class ClownProps(bpy.types.PropertyGroup):
-    def set_clown(self, context):
-        render_layer = bpy.context.scene.clown_mask
-        global enable_clown
-        if enable_clown == False:
-            enable_clown = True
-            render_layer.clown_bool_mask = False
-            bpy.ops.clown.notice('INVOKE_DEFAULT')
+class MultiRGBProps(bpy.types.PropertyGroup):
+    def set_multi_rgb(self, context):
+        render_layer = bpy.context.scene.multi_rgb_mask
+        global enable_multi_rgb
+        if enable_multi_rgb == False:
+            enable_multi_rgb = True
+            render_layer.multi_rgb_bool_mask = False
+            bpy.ops.multi_rgb.notice('INVOKE_DEFAULT')
         else:
-            if render_layer.clown_bool_mask == True:
-                bpy.ops.clown.setup('INVOKE_DEFAULT')
-                bpy.ops.clown.run('INVOKE_DEFAULT')
+            if render_layer.multi_rgb_bool_mask == True:
+                bpy.ops.multi_rgb.setup('INVOKE_DEFAULT')
+                bpy.ops.multi_rgb.run('INVOKE_DEFAULT')
         return None
 
-    clown_bool_mask = bpy.props.BoolProperty(name="Clown", description="Enable Clown Mask", update=set_clown)
+    multi_rgb_bool_mask = bpy.props.BoolProperty(name="MultiRGB", description="Enable MultiRGB Mask", update=set_multi_rgb)
 
 def register():
     bpy.utils.register_module(__name__)
-    bpy.types.Scene.clown_mask = bpy.props.PointerProperty(type=ClownProps)
+    bpy.types.Scene.multi_rgb_mask = bpy.props.PointerProperty(type=MultiRGBProps)
     bpy.types.CyclesRender_PT_layer_passes.append(PassesPanel)
-    bpy.app.handlers.render_post.append(run_clown)
+    bpy.app.handlers.render_post.append(run_multi_rgb)
 
 def unregister():
-    del bpy.types.Scene.clown_mask
-    global enable_clown
-    enable_clown = False
+    del bpy.types.Scene.multi_rgb_mask
+    global enable_multi_rgb
+    enable_multi_rgb = False
     bpy.utils.unregister_module(__name__)
     bpy.types.CyclesRender_PT_layer_passes.remove(PassesPanel)
-    bpy.app.handlers.render_post.clear(run_clown)
+    bpy.app.handlers.render_post.clear(run_multi_rgb)
 
-def run_clown(self):
+def run_multi_rgb(self):
     i=1
     global mat_count
     for mat in bpy.data.materials:
@@ -163,14 +163,14 @@ def run_clown(self):
     y_loc = 433.178
     x_loc = -250.344
     try:
-        group = bpy.data.node_groups['Clown Mask']
+        group = bpy.data.node_groups['MultiRGB Mask']
         for node in group.nodes:
             group.nodes.remove(node)
         group_inputs = group.nodes.new('NodeGroupInput')
         group_inputs.location = -928.319, 85.763
         group_outputs = group.nodes.new('NodeGroupOutput')
     except:
-        group = bpy.data.node_groups.new('Clown Mask', 'CompositorNodeTree')
+        group = bpy.data.node_groups.new('MultiRGB Mask', 'CompositorNodeTree')
         group.inputs.new('NodeSocketColor', 'IndexMA')
         group.outputs.new('NodeSocketColor', 'Mask')
         group_inputs = group.nodes.new('NodeGroupInput')
