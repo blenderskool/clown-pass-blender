@@ -15,6 +15,7 @@ import random
 mat_count = 0
 enable_clown = False
 class ClownSetup(bpy.types.Operator):
+    """Setup Clown Pass for all the materials used in the scene"""
     bl_idname="clown.setup"
     bl_label="Setup"
 
@@ -28,6 +29,7 @@ class ClownSetup(bpy.types.Operator):
         return{'FINISHED'}
 
 class RunClown(bpy.types.Operator):
+    """Run the Clown Operator"""
     bl_idname='clown.run'
     bl_label='Run'
 
