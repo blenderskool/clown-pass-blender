@@ -1,4 +1,4 @@
-<h2>DEPRECATED! Blender 2.8 now comes with Cryptomatte which is similar and must better</h2>
+<h2>DEPRECATED! Blender 2.8 now comes with Cryptomatte which is similar and much better</h2>
 
 
 # Clown Mask Pass in Blender
